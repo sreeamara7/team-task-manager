@@ -1,10 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 import { toast } from "react-toastify";
 
 const Register = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -16,16 +22,23 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       const res = await api.post("/auth/register", formData);
 
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      toast.success("Account created");
+      toast.success("Account created successfully");
       navigate("/dashboard");
-    } catch {
-      toast.error("Registration failed");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Registration failed"
+      );
     }
   };
 
@@ -33,6 +46,7 @@ const Register = () => {
     <div className="auth-wrapper">
       <div className="auth-box">
         <h1 className="auth-title">Create Account 🚀</h1>
+
         <p className="auth-subtitle">
           Start collaborating with your team
         </p>
@@ -40,6 +54,7 @@ const Register = () => {
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             placeholder="Full name"
+            value={formData.name}
             onChange={(e) =>
               setFormData({
                 ...formData,
@@ -52,6 +67,7 @@ const Register = () => {
           <input
             type="email"
             placeholder="Email"
+            value={formData.email}
             onChange={(e) =>
               setFormData({
                 ...formData,
@@ -63,7 +79,8 @@ const Register = () => {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Password (min 6 characters)"
+            value={formData.password}
             onChange={(e) =>
               setFormData({
                 ...formData,
@@ -74,6 +91,7 @@ const Register = () => {
           />
 
           <select
+            value={formData.role}
             onChange={(e) =>
               setFormData({
                 ...formData,
