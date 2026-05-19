@@ -28,24 +28,39 @@ const Login = () => {
 
       toast.success("Login successful");
       navigate("/dashboard");
-    } catch {
-      toast.error("Invalid credentials");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Invalid credentials"
+      );
     }
   };
 
   return (
     <div className="auth-wrapper">
       <div className="auth-box">
-        <h1 className="auth-title">Welcome Back 👋</h1>
+        <h2
+          style={{
+            color: "#60a5fa",
+            marginBottom: "10px",
+            fontSize: "16px",
+            letterSpacing: "1px",
+            textTransform: "uppercase",
+          }}
+        >
+          Team Task Manager
+        </h2>
+
+        <h1 className="auth-title">Welcome 👋</h1>
 
         <p className="auth-subtitle">
-          Sign in to continue managing projects and tasks
+          Sign in to manage projects, tasks, and team collaboration
         </p>
 
         <form className="auth-form" onSubmit={handleSubmit}>
           <input
             type="email"
             placeholder="Email address"
+            value={formData.email}
             onChange={(e) =>
               setFormData({
                 ...formData,
@@ -58,6 +73,7 @@ const Login = () => {
           <input
             type="password"
             placeholder="Password"
+            value={formData.password}
             onChange={(e) =>
               setFormData({
                 ...formData,
@@ -78,7 +94,7 @@ const Login = () => {
             color: "#94a3b8",
           }}
         >
-          No account? <Link to="/register">Create one</Link>
+          New here? <Link to="/register">Create an account</Link>
         </p>
       </div>
     </div>
